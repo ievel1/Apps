@@ -1,34 +1,61 @@
+import datetime
+import pytz
 import tkinter as tk
-from datetime import datetime, timezone, timedelta
+from tkinter import ttk
 
-def get_current_time(timezone_str):
-    tz = timezone(timedelta(hours=timezone_str))
-    current_time = datetime.now(tz).strftime("%H:%M:%S")
-    return current_time
+# Define color constants
+BG_COLOR = "#E5E5E5"
+LABEL_COLOR = "#333333"
+TIME_COLOR = "#00AEEF"
+HELVETICA_FONT = ("Helvetica", 25, "bold")
+DIGITAL_7_FONT = ("digital-7", 35, "normal")  # Use the correct font name
 
-def update_time():
-    current_time_icelandic = get_current_time(0)  # Iceland: UTC
-    current_time_danish = get_current_time(2)     # Denmark: UTC+2
-    
-    clock_label_icelandic.config(text=f"Icelandic Time: {current_time_icelandic}")
-    clock_label_danish.config(text=f"Danish Time: {current_time_danish}")
-    
-    root.after(1000, update_time)
+def get_time_in_timezone(timezone):
+    selected_timezone = pytz.timezone(timezone)
+    current_time = datetime.datetime.now(selected_timezone)
+    time_string = current_time.strftime("%H:%M:%S")
+    return time_string
 
-# Create the main application window
-root = tk.Tk()
-root.title("Multi-Timezone Clock App")
-root.geometry("400x200")  # Set the window size
+def update_time_labels():
+    iceland_time = get_time_in_timezone('Atlantic/Reykjavik')
+    denmark_time = get_time_in_timezone('Europe/Copenhagen')
+    iceland_label.config(text=f"Iceland", font=HELVETICA_FONT, foreground=LABEL_COLOR)
+    denmark_label.config(text=f"Denmark", font=HELVETICA_FONT, foreground=LABEL_COLOR)
+    iceland_time_label.config(text=iceland_time, font=DIGITAL_7_FONT, foreground=TIME_COLOR)
+    denmark_time_label.config(text=denmark_time, font=DIGITAL_7_FONT, foreground=TIME_COLOR)
+    app.after(1000, update_time_labels)
 
-# Create labels for Icelandic and Danish times with updated styling
-clock_label_icelandic = tk.Label(root, font=("Helvetica", 18), fg="blue")
-clock_label_icelandic.pack(pady=(20, 0))  # Add vertical padding
+app = tk.Tk()
+app.title("Dual Time Clocks")
 
-clock_label_danish = tk.Label(root, font=("Helvetica", 18), fg="green")
-clock_label_danish.pack()
+# Set the width and height for the initial window size
+initial_width = 400
+initial_height = 250
 
-# Start the clock update loop
-update_time()
+app.geometry(f"{initial_width}x{initial_height}")
+app.configure(bg=BG_COLOR)
 
-# Run the Tkinter event loop
-root.mainloop()
+style = ttk.Style()
+style.configure("TLabel", background=BG_COLOR)
+
+frame = ttk.Frame(app)
+frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+denmark_label = ttk.Label(frame, wraplength=200, justify="center", font=HELVETICA_FONT, foreground=LABEL_COLOR)
+denmark_label.grid(row=0, column=0, padx=20, pady=10)
+
+iceland_label = ttk.Label(frame, wraplength=200, justify="center", font=HELVETICA_FONT, foreground=LABEL_COLOR)
+iceland_label.grid(row=1, column=0, padx=20, pady=10)
+
+denmark_time_label = ttk.Label(frame, wraplength=200, justify="center", font=DIGITAL_7_FONT, foreground=TIME_COLOR)
+denmark_time_label.grid(row=0, column=1, padx=20, pady=10)
+
+iceland_time_label = ttk.Label(frame, wraplength=200, justify="center", font=DIGITAL_7_FONT, foreground=TIME_COLOR)
+iceland_time_label.grid(row=1, column=1, padx=20, pady=10)
+
+# Force initial layout update
+app.update()
+
+update_time_labels()
+
+app.mainloop()
