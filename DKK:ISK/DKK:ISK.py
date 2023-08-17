@@ -1,6 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget
 from PyQt5.QtGui import QFont
+import requests
+import json
 
 class CurrencyConverterApp(QMainWindow):
     def __init__(self):
@@ -68,16 +70,32 @@ class CurrencyConverterApp(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = CurrencyConverterApp()
+    url = "https://cdn.forexvalutaomregner.dk/api/latest.json"
+    target_cur = ["DKK", "ISK", "USD", "EUR"]
+    set_base = ["USD"]
+    
+    
 
-    # Exchange rates (1 unit of each currency to DKK)
-    exchange_rates = {
-        "DKK": 1,
-        "ISK": 19.39,
-        "USD": 0.147,
-        "EUR": 0.134
-    }
+    try:
+        response = requests.get(url)
+        # Exchange rates (1 unit of each currency to DKK)
+        if response.status_code == 200:
+            data = response.json()
+            exchange_rates = {currency: data["rates"].get(currency) for currency in target_cur}
+            window.set_exchange_rates(exchange_rates)
+
+            with open("exchange_rates.json", "w") as f:
+                json.dump(exchange_rates, f)
+
+        else:
+            print("Failed to fetch exchange rates, using cached rates")
+            with open("exchange_rates" "r") as f:
+                exchange_rates = json.load(f)
+    except:
+        print("No internet connection, using cahced rates")
+        with open("exchange_rates.json", "r") as f:
+            exchange_rates = json.load(f)
     window.set_exchange_rates(exchange_rates)
-
 
     # Set stylesheet for the whole app
     app.setStyleSheet("QMainWindow { background-color: #f2f2f2; }")
