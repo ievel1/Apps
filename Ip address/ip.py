@@ -9,9 +9,7 @@ def calculate_ip_info():
         ip = ipaddress.ip_address(ip_str)
 
         # Determine IP class
-        if ip.is_private:
-            ip_class = "Private"
-        elif ip.version == 4:
+        if ip.version == 4:
             first_byte = int(ip.exploded.split(".")[0])
             if first_byte <= 127:
                 ip_class = "A"
@@ -32,6 +30,12 @@ def calculate_ip_info():
 
         # Calculate the number of hosts in the subnet
         num_hosts = len(list(network.hosts()))
+        
+        # Calculate the number of usable hosts
+        usable_hosts = num_hosts - 2
+        
+        # Calculate the usable IP range
+        usable_ip_range = f"{network_address + 1} to {broadcast_address - 1}"
 
         result_label.config(
             text=f"IP Address: {ip}\n"
@@ -40,7 +44,9 @@ def calculate_ip_info():
                  f"Subnet Mask: {network.prefixlen}\n"
                  f"Broadcast Address: {broadcast_address}\n"
                  f"Number of Hosts: {num_hosts}\n"
+                 f"Number of Usable Hosts: {usable_hosts}\n"
                  f"IP Range: {network.network_address} to {broadcast_address}\n"
+                 f"Usable IP Range: {usable_ip_range}\n"
                  f"Is Private IP: {ip.is_private}\n"
                  f"Is Global IP: {ip.is_global}\n"
                  f"IP Version: {'IPv4' if ip.version == 4 else 'IPv6'}"
@@ -50,27 +56,27 @@ def calculate_ip_info():
         result_label.config(text=f"Invalid IP Address or Subnet Mask: {e}")
 
 # Create a tkinter window
-app = tk.Tk()
-app.title("IP Information Calculator")
+window = tk.Tk()
+window.title("IP Information Calculator")
 
 # Create and configure input fields and labels
-ip_label = tk.Label(app, text="Enter an IP Address:")
+ip_label = tk.Label(window, text="Enter an IP Address:")
 ip_label.pack()
 
-ip_entry = tk.Entry(app)
+ip_entry = tk.Entry(window)
 ip_entry.pack()
 
-subnet_mask_label = tk.Label(app, text="Enter a Subnet Mask in CIDR notation (e.g./24):")
+subnet_mask_label = tk.Label(window, text="Enter a Subnet Mask in CIDR notation (e.g., /24):")
 subnet_mask_label.pack()
 
-subnet_mask_entry = tk.Entry(app)
+subnet_mask_entry = tk.Entry(window)
 subnet_mask_entry.pack()
 
-calculate_button = tk.Button(app, text="Calculate", command=calculate_ip_info)
+calculate_button = tk.Button(window, text="Calculate", command=calculate_ip_info)
 calculate_button.pack()
 
-result_label = tk.Label(app, text="", justify=tk.LEFT)
+result_label = tk.Label(window, text="", justify=tk.LEFT)
 result_label.pack()
 
 # Start the tkinter main loop
-app.mainloop()
+window.mainloop()
