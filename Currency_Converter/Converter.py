@@ -18,18 +18,20 @@ class CurrencyConverterApp(QMainWindow):
             "ISK": QLabel("ISK:"),
             "DKK": QLabel("DKK:"),
             "USD": QLabel("USD:"),
-            "EUR": QLabel("EUR:")
+            "EUR": QLabel("EUR:"),
+            "CNY": QLabel("CNY:")
         }
 
         self.currency_inputs = {
             "ISK": QLineEdit(),
             "DKK": QLineEdit(),
             "USD": QLineEdit(),
-            "EUR": QLineEdit()
+            "EUR": QLineEdit(),
+            "CNY": QLineEdit()
         }
 
         layout = QVBoxLayout()
-        for currency in ["ISK", "DKK", "USD", "EUR"]:
+        for currency in ["ISK", "DKK", "USD", "EUR", "CNY"]:
             self.currency_labels[currency].setFont(QFont("Arial", 14))
             self.currency_inputs[currency].setFont(QFont("Arial", 14))
             self.currency_inputs[currency].textChanged.connect(lambda _, c=currency: self.update_equivalents(c))
@@ -71,7 +73,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = CurrencyConverterApp()
     url = "https://cdn.forexvalutaomregner.dk/api/latest.json"
-    target_cur = ["DKK", "ISK", "USD", "EUR"]
+    target_cur = ["DKK", "ISK", "USD", "EUR", "CNY"]
     set_base = ["USD"]
     
     
