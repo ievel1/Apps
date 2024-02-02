@@ -23,7 +23,7 @@ int main() {
             nw++;
         }
     }
-    printf("Newlines: %d\n", nl);
+    printf("New lines: %d\n", nl);
     printf("New words: %d\n", nw);
     printf("New characters: %d\n", nc);
 }
